@@ -8,20 +8,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContosoCore.Models
 {
-    public enum Grade
+    public class CourseAssignment
     {
-        A, B, C, D, F
-    }
-
-    public class Enrollment
-    {
-        public int EnrollmentID { get; set; }
-        public int StudentID { get; set; }
         public int CourseID { get; set; }
-        [DisplayFormat(NullDisplayText = "No Grade")]
-        public Grade? Grade { get; set; }
-
+        public int InstructorID { get; set; }
         public Course Course { get; set; }
-        public Student Student { get; set; }
+        public Instructor Instructor { get; set; }
+        public string Term { get; set; }
+
     }
 }
