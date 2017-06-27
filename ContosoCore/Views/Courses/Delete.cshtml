@@ -13,6 +13,12 @@
     <dl class="dl-horizontal">
         <input type="hidden" asp-for="CourseID" />
         <dt>
+            @Html.DisplayNameFor(model => model.CourseID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CourseID)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Title)
         </dt>
         <dd>

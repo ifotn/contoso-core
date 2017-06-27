@@ -38,6 +38,7 @@ namespace ContosoCore.Controllers
 
             var course = await _context.Courses
                 .Include(c => c.Department)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
@@ -50,7 +51,8 @@ namespace ContosoCore.Controllers
         // GET: Courses/Create
         public IActionResult Create()
         {
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name");
+            PopulateDepartmentsDropDownList();
+            //ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name");
             return View();
         }
 
@@ -67,7 +69,8 @@ namespace ContosoCore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            //ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
         }
 
@@ -79,12 +82,15 @@ namespace ContosoCore.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses.SingleOrDefaultAsync(m => m.CourseID == id);
+            var course = await _context.Courses
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
                 return NotFound();
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            //ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
         }
 
@@ -120,7 +126,8 @@ namespace ContosoCore.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            //ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
         }
 
@@ -134,6 +141,7 @@ namespace ContosoCore.Controllers
 
             var course = await _context.Courses
                 .Include(c => c.Department)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
@@ -148,7 +156,9 @@ namespace ContosoCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _context.Courses.SingleOrDefaultAsync(m => m.CourseID == id);
+            var course = await _context.Courses
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.CourseID == id);
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
@@ -157,6 +167,14 @@ namespace ContosoCore.Controllers
         private bool CourseExists(int id)
         {
             return _context.Courses.Any(e => e.CourseID == id);
+        }
+
+        private void PopulateDepartmentsDropDownList(object selectedDepartment = null)
+        {
+            var departmentsQuery = from d in _context.Departments
+                                   orderby d.Name
+                                   select d;
+            ViewBag.DepartmentID = new SelectList(departmentsQuery.AsNoTracking(), "DepartmentID", "Name", selectedDepartment);
         }
     }
 }
